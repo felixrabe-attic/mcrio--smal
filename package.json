@@ -4,6 +4,7 @@
   "description": "Simple MArkup Language",
   "main": "./lib/index.js",
   "scripts": {
+    "prepublish": "gulp build",
     "test": "gulp test"
   },
   "repository": {
