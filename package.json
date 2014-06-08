@@ -22,7 +22,9 @@
   },
   "homepage": "https://github.com/mcrio/smal",
   "devDependencies": {
+    "coffee-script": "^1.7.1",
     "gulp": "^3.7.0",
+    "gulp-coffee": "^2.0.0",
     "gulp-util": "^2.2.16"
   }
 }
