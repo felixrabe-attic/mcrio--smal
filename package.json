@@ -1,0 +1,24 @@
+{
+  "name": "smal",
+  "version": "0.0.0",
+  "description": "Simple MArkup Language",
+  "main": "./lib/index.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mcrio/smal.git"
+  },
+  "keywords": [
+    "markup",
+    "language",
+    "dsl"
+  ],
+  "author": "Felix Rabe <felix@rabe.io>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mcrio/smal/issues"
+  },
+  "homepage": "https://github.com/mcrio/smal"
+}
