@@ -20,5 +20,9 @@
   "bugs": {
     "url": "https://github.com/mcrio/smal/issues"
   },
-  "homepage": "https://github.com/mcrio/smal"
+  "homepage": "https://github.com/mcrio/smal",
+  "devDependencies": {
+    "gulp": "^3.7.0",
+    "gulp-util": "^2.2.16"
+  }
 }
