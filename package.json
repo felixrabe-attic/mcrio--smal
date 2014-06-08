@@ -1,6 +1,6 @@
 {
   "name": "smal",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Simple MArkup Language",
   "main": "./lib/index.js",
   "scripts": {
