@@ -1,13 +1,26 @@
+coffee = require 'gulp-coffee'
 gulp = require 'gulp'
 gutil = require 'gulp-util'
-coffee = require 'gulp-coffee'
 mocha = require 'gulp-mocha'
+rimraf = require 'rimraf'
 
-gulp.task 'build', ->
+handleError = (err) ->
+  gutil.log err
+  @emit 'end'
+
+gulp.task 'clean', (done) ->
+  rimraf './lib', done
+
+gulp.task 'build', ['clean'], ->
   gulp.src './lib-src/**/*.coffee'
-    .pipe(coffee(bare: true)).on('error', gutil.log)
-    .pipe(gulp.dest('./lib'))
+    .pipe coffee(bare: true).on 'error', handleError
+    .pipe gulp.dest './lib'
 
 gulp.task 'test', ['build'], ->
-  gulp.src 'test/**/*.coffee'
-    .pipe(mocha())
+  gulp.src './test/**/*.coffee', read: false
+    .pipe mocha().on 'error', handleError
+
+gulp.task 'watch', ->
+  gulp.watch ['./lib-src/**/*.coffee', './test/**/*.coffee'], ['test']
+
+gulp.task 'default', ['watch', 'test']
