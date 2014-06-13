@@ -2,7 +2,7 @@
   "name": "smal",
   "version": "0.0.6",
   "description": "Simple MArkup Language",
-  "main": "./lib/index.js",
+  "main": "./lib",
   "scripts": {
     "prepublish": "gulp build",
     "test": "gulp test"
