@@ -7,13 +7,20 @@ class Parser
     if @options.includeAll
       @options.includeComments = true
       @options.includeBlankLines = true
+  getOptions: ->
+    @options
+  parseLine: (input) ->
+    if input.indexOf('\n') > -1
+      throw new Error 'parseLine() will not parse multiple lines'
+    if input
+      [[input.trim(), []]]
+    else
+      []
   parse: (input) ->
     if input
       [[input.trim(), []]]
     else
       []
-  getOptions: ->
-    @options
 
 module.exports = {Parser}
 
