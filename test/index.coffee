@@ -7,15 +7,15 @@ they = it
 
 require('chai').should()
 
-smal = require '../'
+index = require '../'
 
-describe 'smal.Parser:', ->
+describe 'index.Parser:', ->
   parseEqOpts = null
   parseEq = null
 
   before ->
     parseEqOpts = (options = {}) ->
-      parser = smal.Parser(options)
+      parser = index.Parser(options)
       (input, expected) ->
         parser.parse(input).should.deep.equal expected
     parseEq = parseEqOpts()
@@ -32,7 +32,7 @@ describe 'smal.Parser:', ->
       options = null
 
       before ->
-        parser = smal.Parser()
+        parser = index.Parser()
         options = parser.getOptions()
 
       they 'should not include comments', ->
