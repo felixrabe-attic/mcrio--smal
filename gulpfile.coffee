@@ -24,15 +24,19 @@ gulp.task 'clean', (done) ->
   rimraf './lib', done
 
 gulp.task 'build', ['clean'], (done) ->
+  storeError = do ->
+    fn = (err) -> fn.err = err
+    fn.err = undefined
+    fn
   buildEnd = do ->
     buildCounter = 2
-    -> done() unless --buildCounter
+    -> done(storeError.err) unless --buildCounter
   gulp.src './lib-src/**/*.coffee'
-    .pipe coffee(bare: true).on 'error', handleError()
+    .pipe coffee(bare: true).on 'error', handleError(storeError)
     .pipe gulp.dest './lib'
     .on 'end', buildEnd
   gulp.src './lib-src/**/*.pegjs'
-    .pipe peg().on 'error', handleError()
+    .pipe peg().on 'error', handleError(storeError)
     .pipe gulp.dest './lib'
     .on 'end', buildEnd
   undefined
