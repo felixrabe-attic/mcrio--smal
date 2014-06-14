@@ -100,7 +100,12 @@ describe 'index.Parser.parse:', ->
     parseEqOpts = (options = {}) ->
       parser = index.Parser(options)
       (input, expected) ->
-        parser.parse(input).should.deep.equal expected
+        if expected instanceof Error
+          (->
+            parser.parse(input)
+          ).should.Throw Error
+        else
+          parser.parse(input).should.deep.equal expected
     parseEq = parseEqOpts()
 
   it 'should parse empty input', ->
@@ -132,39 +137,153 @@ describe 'index.Parser.parse:', ->
 
     describe 'one empty element', ->
       it 'is parsed from a character', ->
-        parseEq 'a', [['a', []]]
+        parseEq 'a',   [['a', []]]
         parseEq 'a\n', [['a', []]]
 
       it 'is parsed from a word', ->
-        parseEq 'foo', [['foo', []]]
+        parseEq 'foo',   [['foo', []]]
         parseEq 'bar\n', [['bar', []]]
 
     describe 'two elements', ->
-      they 'are parsed from two single-word lines'
+      they 'are parsed from two single-word lines', ->
+        parseEq 'x\ny', [
+          ['x', []]
+          ['y', []]
+        ]
+        parseEq 'foo\nbar', [
+          ['foo', []]
+          ['bar', []]
+        ]
 
     describe 'nested elements', ->
-      they 'are parsed from one line with two words'
+      they 'are parsed from one line with two words', ->
+        parseEq 'one two', [
+          ['one', [
+            ['two', []]
+          ]]
+        ]
 
-      they 'are parsed from a single-word line folloed by an indented single-word line'
-        # parseEq '''
-        #   one
-        #     two
-        #       three
-        # ''', [
-        #   ['one', [
-        #     ['two', [
-        #       ['three', []]
-        #     ]]
-        #   ]]
-        # ]
+      they 'are parsed from a single-word line followed by an indented single-word line', ->
+        parseEq '''
+          one
+            two
+        ''', [
+          ['one', [
+            ['two', []]
+          ]]
+        ]
+        parseEq '''
+          one
+            two
+              three
+        ''', [
+          ['one', [
+            ['two', [
+              ['three', []]
+            ]]
+          ]]
+        ]
+        parseEq '''
+          one
+            two
+              three
+            four
+        ''', [
+          ['one', [
+            ['two', [
+              ['three', []]
+            ]]
+            ['four', []]
+          ]]
+        ]
 
   describe 'strings', ->
 
-    they 'are parsed from quoted character sequences'
+    they 'are parsed from quoted character sequences', ->
+      parseEq '''
+        "some string"
+      ''', [
+        ['some string']
+      ]
+
+    they 'are parsed as element children', ->
+      expected = [
+        ['a', [ ['great thing'] ]]
+      ]
+
+      parseEq '''
+        a "great thing"
+      ''', expected
+
+      parseEq '''
+        a
+          "great thing"
+      ''', expected
+
+      parseEq '''
+        foo
+          "bar"
+          "baz"
+      ''', [
+        ['foo', [
+          ['bar']
+          ['baz']
+        ]]
+      ]
+
+    they 'cannot be nested', ->
+      parseEq '''
+        "one"
+          "two"
+      ''', new Error
 
   describe 'groups', ->
 
-    they 'are parsed from braced expressions within a line'
+    they 'are equivalent to new lines', ->
+      expected = [
+        ['a', [
+          ['b', [
+            ['c']
+          ]]
+        ]]
+      ]
+
+      parseEq '''
+        a
+          b
+            "c"
+      ''', expected
+
+      parseEq '''
+        a
+          b "c"
+      ''', expected
+
+      parseEq '''
+        a (b "c")
+      ''', expected
+
+      # these are different:
+      expected = [
+        ['a', [
+          ['b', []]
+          ['c']
+        ]]
+      ]
+
+      parseEq '''
+        a b
+          "c"
+      ''', expected
+
+      parseEq '''
+        a b "c"
+      ''', expected
+
+    they 'are invalid at the beginning of lines', ->
+      parseEq '''
+        (a group)
+      ''', new Error
 
   describe 'comments:', ->
 
@@ -181,7 +300,8 @@ describe 'index.Parser.parse:', ->
     describe 'when omitted (!options.includeComments):', ->
       pe = parseEq
 
-      they 'begin with //'
+      they 'begin with //', ->
+        parseEq '// just a comment', []
 
       they 'are parsed when in their own lines'
 
@@ -208,10 +328,53 @@ describe 'index.Parser.parse:', ->
 
       they 'are parsed at the beginning of input'
 
-      they 'are parsed at the end of input'
+      they 'are parsed at the end of input', ->
+        parseEq 'a\n\n\n', [
+          ['a', []]
+        ]
 
-      they 'are parsed in-between elements'
+      they 'are parsed in-between elements', ->
+        parseEq '''
+          a
 
-      they 'are parsed at the beginning of indented blocks'
+          b
+        ''', [
+          ['a', []]
+          ['b', []]
+        ]
 
-      they 'are parsed at the end of indented blocks'
+        parseEq '''
+          outer
+            a
+
+            b
+        ''', [
+          ['outer', [
+            ['a', []]
+            ['b', []]
+          ]]
+        ]
+
+      they 'are parsed at the beginning of indented blocks', ->
+        parseEq '''
+          one
+
+            two
+        ''', [
+          ['one', [
+            ['two', []]
+          ]]
+        ]
+
+      they 'are parsed at the end of indented blocks', ->
+        parseEq '''
+          one
+            two
+
+          three
+        ''', [
+          ['one', [
+            ['two', []]
+          ]]
+          ['three', []]
+        ]
