@@ -144,6 +144,9 @@ describe 'index.Parser.parse:', ->
         parseEq 'foo',   [['foo', []]]
         parseEq 'bar\n', [['bar', []]]
 
+      it 'is parsed from a word ending in numbers', ->
+        parseEq 'foo123', [['foo123', []]]
+
     describe 'two elements', ->
       they 'are parsed from two single-word lines', ->
         parseEq 'x\ny', [

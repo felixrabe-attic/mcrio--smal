@@ -41,7 +41,7 @@ group
     }
 
 name
-  = $[a-z]+
+  = $([a-z]+[0-9]*)
 
 wrappedName
   = name:name {
